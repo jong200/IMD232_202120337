@@ -1,9 +1,15 @@
+let mover;
+
 function setup() {
   setCanvasContainer('canvas', 3, 2, true);
   background(255);
-  Mover = new MoverNoMass(width / 2, height / 2);
+  mover = new MoverNoMass(width / 2, height / 2, 50);
 }
 function draw() {
   background(255);
-  Mover.display();
+
+  mover.update();
+  mover.checkEdges();
+  mover.display();
+  mover.displayVectors();
 }
