@@ -13,18 +13,18 @@ function setup() {
 }
 
 function draw() {
-  // let g = p5.Vector.mult(gravity, ball.mass);
-  // ball.applyForce(g);
-  // let g2 = p5.Vector.mult(gravity, ball2.mass);
-  // ball2.applyForce(g2);
+  let g = p5.Vector.mult(gravity, ball.mass);
+  ball.applyForce(g);
+  let g2 = p5.Vector.mult(gravity, ball2.mass);
+  ball2.applyForce(g2);
   if (mouseIsPressed) {
     ball.applyForce(wind);
     ball2.applyForce(wind);
   }
   ball.update();
   ball2.update();
-  // ball.edgeBounce();
-  // ball2.edgeBounce();
+  ball.edgeBounce();
+  ball2.edgeBounce();
   background('salmon');
   fill('white');
   ball.display();
