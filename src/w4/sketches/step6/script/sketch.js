@@ -14,7 +14,9 @@ function setup() {
 function draw() {
   background(255);
 
-  moverA.applyForce(gravity);
+  let gravityA = createVector(gravity.x, gravity.y); //중력이 정확히 작동해서 둘이 동시에 낙하
+  gravityA.mult(moverA.mass);
+  moverA.applyForce(gravityA);
   if (mouseIsPressed && isMouseInsideCanvas()) {
     moverA.applyForce(wind);
   }
@@ -23,7 +25,9 @@ function draw() {
   moverA.display();
   moverA.displayVectors();
 
-  moverB.applyForce(gravity);
+  let gravityB = createVector(gravity.x, gravity.y);
+  gravityB.mult(moverB.mass);
+  moverB.applyForce(gravityB);
   if (mouseIsPressed && isMouseInsideCanvas()) {
     moverB.applyForce(wind);
   }
