@@ -9,11 +9,12 @@ function setup() {
   gravity = createVector(0, 0.1);
   wind = createVector(0.2, 0);
 }
+
 function draw() {
   background(255);
 
   mover.addAcc(gravity);
-  if (mouseIsPressed && isMouseInsideCanvus()) {
+  if (mouseIsPressed && isMouseInsideCanvas()) {
     mover.addAcc(wind);
   }
   mover.update();
