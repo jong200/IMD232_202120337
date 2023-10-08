@@ -20,6 +20,14 @@ function draw() {
   if (mouseIsPressed && isMouseInsideCanvas()) {
     moverA.applyForce(wind);
   }
+  if (moverA.contactEdge()) {
+    let c = 0.01;
+    // let friction = createVector(moverA.vel.x, moverA.vel.y);
+    let friction = moverA.vel.copy();
+    friction.mult(-1);
+    friction.mult(c);
+    moverA.applyForce(friction);
+  }
   moverA.update();
   moverA.checkEdges();
   moverA.display();
@@ -30,6 +38,14 @@ function draw() {
   moverB.applyForce(gravityB);
   if (mouseIsPressed && isMouseInsideCanvas()) {
     moverB.applyForce(wind);
+  }
+  if (moverB.contactEdge()) {
+    let c = 0.9;
+    // let friction = createVector(moverA.vel.x, moverA.vel.y);
+    let friction = moverB.vel.copy();
+    friction.mult(-1);
+    friction.mult(c);
+    moverB.applyForce(friction);
   }
   moverB.update();
   moverB.checkEdges();
