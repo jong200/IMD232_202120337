@@ -12,7 +12,6 @@ class Body {
   attract(body) {
     let force = p5.Vector.sub(this.position, body.position);
     let distance = constrain(force.mag(), 16, 100);
-    ㄴ;
     let strength = (G * (this.mass * body.mass)) / distance ** 2;
     force.setMag(strength);
     return force;
