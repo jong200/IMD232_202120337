@@ -1,24 +1,25 @@
-let mover;
-let gravity;
-let wind;
+let aMover;
+let mVec;
 
 function setup() {
   setCanvasContainer('canvas', 3, 2, true);
+
+  aMover = new Mover(width / 2, height / 2, 10, 25, 'salmon');
+  mVec = createVector();
+
   background(255);
-  mover = new MoverNoMass(width / 2, height / 2, 50);
-  gravity = createVector(0, 0.1);
-  wind = createVector(0.2, 0);
 }
 
 function draw() {
+  mVec.set(mouseX, mouseY);
+
+  const dirVec = p5.Vector.sub(mVec, aMover.pos);
+  dirVec.setMag(0.5);
+  aMover.applyForce(dirVec);
+  aMover.update();
+
   background(255);
 
-  mover.addAcc(gravity);
-  if (mouseIsPressed && isMouseInsideCanvas()) {
-    mover.addAcc(wind);
-  }
-  mover.update();
-  mover.checkEdges();
-  mover.display();
-  mover.displayVectors();
+  aMover.display();
+  aMover.displayVectors();
 }
