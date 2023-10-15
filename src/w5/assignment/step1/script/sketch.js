@@ -1,46 +1,45 @@
-const bodies = [];
-const bodyNum = 30;
-const G = 1;
-
-let showVector = false;
+const cNum = 8;
+const rNum = 8;
+let gridC;
+let gridR;
+let angleBegin = 0;
+let angleBeginVel;
+let angleStep;
 
 function setup() {
   setCanvasContainer('canvas', 1, 1, true);
-  reset();
+
+  colorMode(HSL, 360, 100, 100, 100);
+  background(360, 0, 100);
 }
 
 function draw() {
-  background(255);
+  background(360, 0, 100);
+  fill(0);
 
-  for (let i = 0; i < 10; i++) {
-    for (let j = 0; j < 10; j++) {
-      if (i !== j) {
-        let forceForJ = bodies[i].attract(bodies[j]);
-        bodies[j].applyForce(forceForJ);
+  for (let a = 0; a < cNum; a++) {
+    for (let b = 0; b < rNum; b++) {
+      fill((255 / cNum) * a, (255 / rNum) * b, 255);
+      let x = ((a + 1) * width) / (cNum + 1);
+      let y = ((b + 1) * height) / (rNum + 1);
+      if (a % 1 == 0) {
+        ellipse(x, y, 50);
       }
     }
-    bodies[i].update();
-    bodies[i].display();
-    if (showVector) {
-      bodies[i].displayVectors();
+  }
+
+  for (let r = 0; r < rNum; r++) {
+    for (let c = 0; c < cNum; c++) {
+      push();
+      translate(width / 2, height / 2);
+      rotate((TAU / 360) * 15);
+      pop();
     }
   }
-}
 
-// function mousePressed() {
-//   if (isMouseInsideCanvas()) {
-//     reset();
-//   }
-// }
+  angleBegin += angleBeginVel;
 
-function reset() {
-  for (let i = 0; i < 10; i++) {
-    bodies[i] = new Body(random(width), random(height), random(0.1, 2));
-  }
-}
-
-function keyPressed() {
-  if (key === 's' || key === 'S') {
-    showVector = !showVector;
+  function angleBeginVel(angleAsFrame) {
+    return TAU / angleAsFrame;
   }
 }
