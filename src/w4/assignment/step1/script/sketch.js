@@ -1,5 +1,5 @@
 let bodies = [];
-const bodyNum = 50; //바꿈
+const bodyNum = 30;
 let G = 1;
 
 let showVector = false;
@@ -13,8 +13,8 @@ function setup() {
 function draw() {
   background(255);
 
-  for (let i = 0; i < 50; i++) {
-    for (let j = 0; j < 50; j++) {
+  for (let i = 0; i < bodies.length; i++) {
+    for (let j = 0; j < bodies.length; j++) {
       if (i !== j) {
         let forceForJ = bodies[i].attract(bodies[j]);
         bodies[j].applyForce(forceForJ);

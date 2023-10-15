@@ -1,10 +1,10 @@
 class Body {
-  constructor(x, y) {
+  constructor(x, y, mass) {
     this.position = createVector(x, y);
     this.velocity = createVector(0, 0);
     this.acceleration = createVector(0, 0);
-    this.mass = 8;
-    this.radius = this.mass ** (1 / 2) * 4;
+    this.mass = mass;
+    this.radius = this.mass ** (1 / 2) * 30;
     this.velocityVisualization = createVector(0, 0);
     this.accelerationVisualization = createVector(0, 0);
   }
