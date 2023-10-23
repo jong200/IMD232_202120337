@@ -1,45 +1,30 @@
-const cNum = 8;
-const rNum = 8;
-let gridC;
-let gridR;
-let angleBegin = 0;
-let angleBeginVel;
-let angleStep;
+let emitter;
+let particle;
+let g;
 
 function setup() {
-  setCanvasContainer('canvas', 1, 1, true);
+  setCanvasContainer('canvasGoesHere', 2, 1, true);
 
-  colorMode(HSL, 360, 100, 100, 100);
-  background(360, 0, 100);
+  colorMode(HSL, 360, 100, 100);
+  particle = new Ball(width / 2, 0, 0, 0, 1, 0, 100, 50);
+
+  emitter = new Emitter(width / 2, height);
+
+  g = createVector(0, 0.1);
+
+  background('white');
 }
 
 function draw() {
-  background(360, 0, 100);
-  fill(0);
+  background('white');
+  const scaledG = p5.Vector.mult(g, particle.mass);
+  particle.applyForce(scaledG);
+  particle.update();
+  particle.display();
 
-  for (let a = 0; a < cNum; a++) {
-    for (let b = 0; b < rNum; b++) {
-      fill((255 / cNum) * a, (255 / rNum) * b, 255);
-      let x = ((a + 1) * width) / (cNum + 1);
-      let y = ((b + 1) * height) / (rNum + 1);
-      if (a % 1 == 0) {
-        ellipse(x, y, 50);
-      }
-    }
-  }
-
-  for (let r = 0; r < rNum; r++) {
-    for (let c = 0; c < cNum; c++) {
-      push();
-      translate(width / 2, height / 2);
-      rotate((TAU / 360) * 15);
-      pop();
-    }
-  }
-
-  angleBegin += angleBeginVel;
-
-  function angleBeginVel(angleAsFrame) {
-    return TAU / angleAsFrame;
-  }
+  emitter.createBall();
+  emitter.applyGravity(g);
+  emitter.update();
+  emitter.display();
+  console.log(emitter.balls.length);
 }
