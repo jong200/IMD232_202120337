@@ -1,146 +1,120 @@
-var Engine = Matter.Engine,
-  Render = Matter.Render,
-  Runner = Matter.Runner,
-  Body = Matter.Body,
-  Composite = Matter.Composite,
-  Composites = Matter.Composites,
-  Constraint = Matter.Constraint,
-  MouseConstraint = Matter.MouseConstraint,
-  Mouse = Matter.Mouse,
-  Bodies = Matter.Bodies;
+const {
+  Engine,
+  Render,
+  Runner,
+  Composites,
+  Common,
+  MouseConstraint,
+  Mouse,
+  Composite,
+  Vertices,
+  Bodies,
+} = Matter;
+
+Common.setDecomp(decomp);
 
 // create engine
-var engine = Engine.create(),
+const engine = Engine.create(),
   world = engine.world;
 
-// create renderer
-const elem = document.querySelector('#canvas');
-var render = Render.create({
-  element: elem,
-  engine: engine,
-  options: {
-    width: 800,
-    height: 600,
-    showAngleIndicator: true,
-    showCollisions: true,
-    showVelocity: true,
-  },
-});
-
-Render.run(render);
-
 // create runner
-var runner = Runner.create();
-Runner.run(runner, engine);
+const runner = Runner.create();
 
-// add bodies
-var group = Body.nextGroup(true);
+const oWidth = 800;
+const oHeight = 600;
 
-var ropeA = Composites.stack(100, 50, 8, 1, 10, 10, function (x, y) {
-  return Bodies.rectangle(x, y, 50, 20, { collisionFilter: { group: group } });
-});
+let mouse;
 
-Composites.chain(ropeA, 0.5, 0, -0.5, 0, {
-  stiffness: 0.8,
-  length: 2,
-  render: { type: 'line' },
-});
-Composite.add(
-  ropeA,
-  Constraint.create({
-    bodyB: ropeA.bodies[0],
-    pointB: { x: -25, y: 0 },
-    pointA: { x: ropeA.bodies[0].position.x, y: ropeA.bodies[0].position.y },
-    stiffness: 0.5,
-  })
-);
+const walls = [];
+let stack;
 
-group = Body.nextGroup(true);
+function setup() {
+  setCanvasContainer('canvas', oWidth, oHeight, true);
 
-var ropeB = Composites.stack(350, 50, 10, 1, 10, 10, function (x, y) {
-  return Bodies.circle(x, y, 20, { collisionFilter: { group: group } });
-});
+  walls.push(Bodies.rectangle(400, 0, 800, 50, { isStatic: true }));
+  walls.push(Bodies.rectangle(400, 600, 800, 50, { isStatic: true }));
+  walls.push(Bodies.rectangle(800, 300, 50, 600, { isStatic: true }));
+  walls.push(Bodies.rectangle(0, 300, 50, 600, { isStatic: true }));
+  Composite.add(world, walls);
 
-Composites.chain(ropeB, 0.5, 0, -0.5, 0, {
-  stiffness: 0.8,
-  length: 2,
-  render: { type: 'line' },
-});
-Composite.add(
-  ropeB,
-  Constraint.create({
-    bodyB: ropeB.bodies[0],
-    pointB: { x: -20, y: 0 },
-    pointA: { x: ropeB.bodies[0].position.x, y: ropeB.bodies[0].position.y },
-    stiffness: 0.5,
-  })
-);
-
-group = Body.nextGroup(true);
-
-var ropeC = Composites.stack(600, 50, 13, 1, 10, 10, function (x, y) {
-  return Bodies.rectangle(x - 20, y, 50, 20, {
-    collisionFilter: { group: group },
-    chamfer: 5,
+  let arrow = Vertices.fromPath('40 0 40 20 100 20 100 80 40 80 40 100 0 50'),
+    chevron = Vertices.fromPath('100 0 75 50 100 100 25 100 0 50 25 0'),
+    star = Vertices.fromPath(
+      '50 0 63 38 100 38 69 59 82 100 50 75 18 100 31 59 0 38 37 38'
+    ),
+    horseShoe = Vertices.fromPath(
+      '35 7 19 17 14 38 14 58 25 79 45 85 65 84 65 66 46 67 34 59 30 44 33 29 45 23 66 23 66 7 53 7'
+    );
+  stack = Composites.stack(50, 50, 6, 4, 10, 10, function (x, y) {
+    return Bodies.fromVertices(
+      x,
+      y,
+      Common.choose([arrow, chevron, star, horseShoe])
+    );
   });
-});
+  Composite.add(world, stack);
 
-Composites.chain(ropeC, 0.3, 0, -0.3, 0, { stiffness: 1, length: 0 });
-Composite.add(
-  ropeC,
-  Constraint.create({
-    bodyB: ropeC.bodies[0],
-    pointB: { x: -20, y: 0 },
-    pointA: { x: ropeC.bodies[0].position.x, y: ropeC.bodies[0].position.y },
-    stiffness: 0.5,
-  })
-);
-
-Composite.add(world, [
-  ropeA,
-  ropeB,
-  ropeC,
-  Bodies.rectangle(400, 600, 1200, 50.5, { isStatic: true }),
-]);
-
-// add mouse control
-var mouse = Mouse.create(render.canvas),
-  mouseConstraint = MouseConstraint.create(engine, {
+  mouse = Mouse.create(canvas.elt);
+  mouse.pixelRatio = (pixelDensity() * width) / oWidth;
+  let mouseConstraint = MouseConstraint.create(engine, {
     mouse: mouse,
     constraint: {
       stiffness: 0.2,
-      render: {
-        visible: false,
-      },
     },
   });
+  Composite.add(world, mouseConstraint);
 
-Composite.add(world, mouseConstraint);
+  console.log('walls', walls);
+  console.log('stack', stack);
 
-// keep the mouse in sync with rendering
-render.mouse = mouse;
+  background('white');
+  Runner.run(runner, engine);
+}
 
-// fit the render viewport to the scene
-Render.lookAt(render, {
-  min: { x: 0, y: 0 },
-  max: { x: 700, y: 600 },
-});
+function draw() {
+  mouse.pixelRatio = (pixelDensity() * width) / oWidth;
 
-// context for MatterTools.Demo
-return {
-  engine: engine,
-  runner: runner,
-  render: render,
-  canvas: render.canvas,
-  stop: function () {
-    Matter.Render.stop(render);
-    Matter.Runner.stop(runner);
-  },
-};
+  background('white');
 
-Example.chains.title = 'Chains';
-Example.chains.for = '>=0.14.2';
+  stroke(0);
+  noFill();
+  walls.forEach((eachWall) => {
+    beginShape();
+    eachWall.vertices.forEach((eachVertex) => {
+      vertex(
+        (eachVertex.x / oWidth) * width,
+        (eachVertex.y / oHeight) * height
+      );
+    });
+    endShape(CLOSE);
+  });
 
-if (typeof module !== 'undefined') {
-  module.exports = Example.chains;
+  noStroke();
+  fill('red');
+  stack.bodies.forEach((eachBody) => {
+    // beginShape();
+    // eachBody.vertices.forEach((eachVertex) => {
+    //   vertex(
+    //     (eachVertex.x / oWidth) * width,
+    //     (eachVertex.y / oHeight) * height
+    //   );
+    // });
+    // endShape(CLOSE);
+    eachBody.parts.forEach((eachPart, idx) => {
+      //   if (idx === 0) {
+      //     fill(0);
+      //   } else {
+      //     fill('red');
+      //   }
+      if (idx === 0) return;
+      beginShape();
+      eachPart.vertices.forEach((eachVertex) => {
+        vertex(
+          (eachVertex.x / oWidth) * width,
+          (eachVertex.y / oHeight) * height
+        );
+      });
+      endShape(CLOSE);
+    });
+  });
 }
