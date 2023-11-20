@@ -1,21 +1,13 @@
-let traffic;
-let infiniteOffset = 80;
+attribute vec3 aPosition;
+attribute vec2 aTexCoord;
 
-function setup() {
-  setCanvasContainer('canvas', 3, 2, true);
-  colorMode(HSL, 360, 100, 100, 100);
-  background('white');
-  traffic = new Traffic();
-  for (let n = 0; n < 10; n++) {
-    traffic.addVehicle(random(width), random(height));
-  }
-}
+varying vec2 vTexCoord;
 
-function draw() {
-  background('white');
-  traffic.run();
-}
+void main() {
+  vTexCoord = aTexCoord;
 
-function mouseDragged() {
-  traffic.addVehicle(mouseX, mouseY);
+  vec4 positionVec4 = vec4(aPosition, 1.0);
+  positionVec4.xy = positionVec4.xy * 2.0 - 1.0;
+
+  gl_Position = positionVec4;
 }
